@@ -423,8 +423,11 @@ my	$auto_save=0;
 
 			if ($key eq $one_case->{'key'} && $one_case->{'value_regexp'} && !$one_case->{'value'}) {
 				$value =~ /(.+?)\,/;
-				if ($one_case->{'action'} eq 'delkey' && $1 eq $one_case->{'value_regexp'}){	undef($one_line);	}
-
+				if ($one_case->{'action'} eq 'delkey') {
+					undef($one_line); 
+				} elsif ($1 =~ /$one_case->{'value_regexp'}/) {
+					$one_line = "$key=".$one_case->{'new_value'}
+				}
 			} elsif ($key eq $one_case->{'key'} && !$one_case->{'value'}) {			#处理全部匹配的key的value值
 				if ($one_case->{'action'} eq 'delkey') {	undef($one_line);	}
 				else {	$one_line = "$key=".$one_case->{'new_value'};	}
@@ -879,8 +882,9 @@ add section with name.
 =head2 assign_editkey
 
     $sip_conf->assign_editkey(section=>[section name|unsection],key=>[keyname],value=>[value],new_value=>[new_value]);
+    $sip_conf->assign_editkey(section=>[section name|unsection],key=>[keyname],value_regexp=>[value],new_value=>[new_value]);
 
-modify value with matched section.if don't assign value=> will replace all matched key. 
+modify value with matched section. If don't assign value=> will replace all matched key. 
 
 warnning example script:
 
