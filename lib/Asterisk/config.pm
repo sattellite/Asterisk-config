@@ -19,6 +19,7 @@ $Asterisk::config::VERSION='0.97';
 
 use strict;
 use Fcntl ':flock';
+use open qw(:std :utf8);
 
 ##############################
 #  CLASS METHOD
