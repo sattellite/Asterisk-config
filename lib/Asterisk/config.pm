@@ -24,9 +24,9 @@ use open qw(:std :utf8);
 ##############################
 #  CLASS METHOD
 sub new {
-my  $class = shift;
-my  %args = @_;
-my  (@resource_list,$resource_list,$parsed_conf,$parsed_section_chunk,$comment_flag);
+  my $class = shift;
+  my %args = @_;
+  my (@resource_list,$resource_list,$parsed_conf,$parsed_section_chunk,$comment_flag);
 
   #try read
   return(0) if (!defined $args{file});
@@ -55,7 +55,7 @@ my  (@resource_list,$resource_list,$parsed_conf,$parsed_section_chunk,$comment_f
     $args{'reload_when_save'} = 1;
   }
 
-my  $self = {
+  my $self = {
     #user input
     file=> $args{'file'},
     keep_resource_array=> $args{'keep_resource_array'},
@@ -77,14 +77,14 @@ my  $self = {
 #  INTERNAL SUBROUTE _parse
 # parse conf
 sub _parse {
-my  $resource_list = $_[0];
-my  $comment_flag = $_[1];
-my  $section_chunk = $_[2];
+  my $resource_list = $_[0];
+  my $comment_flag = $_[1];
+  my $section_chunk = $_[2];
 
-my (%DATA,$last_section_name,%DATA_CHUNK);
+  my (%DATA,$last_section_name,%DATA_CHUNK);
   $DATA{'[unsection]'}={};  $DATA_CHUNK{'[unsection]'}={} if ($section_chunk);
   foreach my $one_line (@$resource_list) {
-  my  $line_sp=&_clean_string($one_line,$comment_flag);
+    my $line_sp=&_clean_string($one_line,$comment_flag);
 
     #format : Find New Section ???
     if ($line_sp =~ /^\[(.+)\]/) {
@@ -95,7 +95,7 @@ my (%DATA,$last_section_name,%DATA_CHUNK);
     #save source chunk to data_chunk
     } elsif ($section_chunk) {
       next if ($one_line eq '');
-    my  $section_name = $last_section_name;
+    my $section_name = $last_section_name;
       $section_name = '[unsection]' if (!$section_name);
       #copying source chunk to data_chunk
       push(@{$DATA_CHUNK{$section_name}},$one_line);
@@ -105,7 +105,7 @@ my (%DATA,$last_section_name,%DATA_CHUNK);
 
     #fromat : Include "#" ???
     if ($line_sp =~ /^\#/) {
-    my  $section_name = $last_section_name;
+    my $section_name = $last_section_name;
       $section_name = '[unsection]' if (!$section_name);
       $DATA{$section_name}{$line_sp}=[] if (!$DATA{$section_name}{$line_sp});
       push(@{$DATA{$section_name}{$line_sp}},$line_sp);
@@ -115,9 +115,9 @@ my (%DATA,$last_section_name,%DATA_CHUNK);
     #format : Key=Value ???
     if ($line_sp =~ /\=/) {
       #split data and key
-    my  ($key,$value)=&_clean_keyvalue($line_sp);
+    my ($key,$value)=&_clean_keyvalue($line_sp);
 
-    my  $section_name = $last_section_name;
+    my $section_name = $last_section_name;
       $section_name = '[unsection]' if (!$section_name);
       $DATA{$section_name}{$key}=[] if (!$DATA{$section_name}{$key});
       push(@{$DATA{$section_name}{$key}},$value);
@@ -125,44 +125,43 @@ my (%DATA,$last_section_name,%DATA_CHUNK);
     }
   }
 
-return(\%DATA,\%DATA_CHUNK);
+  return(\%DATA,\%DATA_CHUNK);
 }
 
 ##############################
 #  INTERNAL SUBROUTE _clean_string
 # clean strings
 sub _clean_string {
-my  $string = shift;
-my  $comment_flag = shift;
+  my $string = shift;
+  my $comment_flag = shift;
   return '' unless $string;
   if ($string !~ /^\#/) {
     ($string,undef)=split(/$comment_flag/,$string);
   }
   $string =~ s/^\s+//;
   $string =~ s/\s+$//;
-return($string);
+  return($string);
 }
 
 ##############################
 #  INTERNAL SUBROUTE _clean_string
 # split key value of data
 sub _clean_keyvalue {
-my  $string = shift;
-my  ($key,$value)=split(/\=(.*)/,$string);
+  my $string = shift;
+  my ($key,$value)=split(/\=(.*)/,$string);
   $key =~ s/^(\s+)//;   $key =~ s/(\s+)$//;
   if ($value) {
     $value=~ s/^\>//g;    $value =~ s/^(\s+)//; $value =~ s/(\s+)$//;
   }
 
-return($key,$value);
+  return($key,$value);
 }
 
 ##############################
 #  READ METHOD
-sub get_objvar
-{
-my  $self = shift;
-my  $varname = shift;
+sub get_objvar {
+  my $self = shift;
+  my $varname = shift;
   if (defined $self->{$varname}) {
     return($self->{$varname});
   } else {
@@ -170,70 +169,64 @@ my  $varname = shift;
   }
 }
 
-sub fetch_sections_list
-{
-my  $self = shift;
-my  @sections_list = grep(!/^\[unsection\]/, keys %{$self->{parsed_conf}});
-return(\@sections_list);
+sub fetch_sections_list {
+  my $self = shift;
+  my @sections_list = grep(!/^\[unsection\]/, keys %{$self->{parsed_conf}});
+  return(\@sections_list);
 }
 
-sub fetch_sections_hashref
-{
-my  $self = shift;
-return($self->{parsed_conf});
+sub fetch_sections_hashref {
+  my $self = shift;
+  return($self->{parsed_conf});
 }
 
-sub fetch_keys_list
-{
-my  $self = shift;
-my  %args = @_;
+sub fetch_keys_list {
+  my $self = shift;
+  my %args = @_;
   return(0) if (!defined $args{section});
   return(0) if (!defined $self->{parsed_conf}{$args{section}});
 
-my  @keys_list = grep(!/^\[unsection\]/, keys %{$self->{parsed_conf}{$args{section}}});
-return(\@keys_list);
+  my @keys_list = grep(!/^\[unsection\]/, keys %{$self->{parsed_conf}{$args{section}}});
+  return(\@keys_list);
 }
 
-sub fetch_keys_hashref
-{
-my  $self = shift;
-my  %args = @_;
+sub fetch_keys_hashref {
+  my $self = shift;
+  my %args = @_;
   return(0) if (!defined $args{section});
   return(0) if (!defined $self->{parsed_conf}{$args{section}});
 
-return($self->{parsed_conf}{$args{section}});
+  return($self->{parsed_conf}{$args{section}});
 }
 
-sub fetch_values_arrayref
-{
-my  $self = shift;
-my  %args = @_;
+sub fetch_values_arrayref {
+  my $self = shift;
+  my %args = @_;
   return(0) if (!defined $args{section});
   return(0) if (!defined $self->{parsed_conf}{$args{section}});
   return(0) if (!defined $args{key});
   return(0) if (!defined $self->{parsed_conf}{$args{section}}{$args{key}});
 
-return($self->{parsed_conf}{$args{section}}{$args{key}});
+  return($self->{parsed_conf}{$args{section}}{$args{key}});
 }
 
-sub reload
-{
-my  $self = shift;
+sub reload {
+  my $self = shift;
 
   #try read
   return(0) if (!defined $self->{file});
   return(0) if (!-e $self->{file});
   open(DATA,"<$self->{'file'}") or die "Asterisk-config Can't Open file : $!";
-my  @resource_list = <DATA>;
+  my @resource_list = <DATA>;
   close(DATA);
   chomp(@resource_list);
 
   # save to parsed_conf
-my  ($parsed_conf,$conf_chunk_ignored) = &_parse(\@resource_list,$self->{comment_flag});
+  my ($parsed_conf,$conf_chunk_ignored) = &_parse(\@resource_list,$self->{comment_flag});
   $self->{parsed_conf} = $parsed_conf;
 
   # save to resource_list
-my  $resource_list;
+  my $resource_list;
   if (defined $self->{'keep_resource_array'} && $self->{'keep_resource_array'}) {
     $resource_list = \@resource_list;
   }
@@ -244,96 +237,85 @@ my  $resource_list;
     &clean_assign($self);
   }
 
-
-return(1);
+  return(1);
 }
 
 ##############################
 #  WRITE METHOD
 
-sub clean_assign
-{
-my  $self = shift;
-# undef($self->{commit_list});
-  $self->{commit_list}=[];
-return(1);
+sub clean_assign {
+  my $self = shift;
+  # undef($self->{commit_list});
+    $self->{commit_list}=[];
+  return(1);
 }
 
-sub set_objvar
-{
-my  $self = shift;
-my  $key = shift;
-my  $value = shift;
+sub set_objvar {
+  my $self = shift;
+  my $key = shift;
+  my $value = shift;
 
   return(0) if (!defined $value);
   return(0) if (!exists $self->{$key});
   $self->{$key} = $value;
 
-return(1);
+  return(1);
 }
 
 #-----------------------------------------------------------
 #  assign method to commit_list
-sub assign_cleanfile
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_cleanfile {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='cleanfile';
   push(@{$self->{commit_list}},\%hash);
 }
 
-sub assign_matchreplace
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_matchreplace {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='matchreplace';
   push(@{$self->{commit_list}},\%hash);
 }
 
-sub assign_append
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_append {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='append';
   push(@{$self->{commit_list}},\%hash);
 }
 
-sub assign_replacesection
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_replacesection {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='replacesection';
   push(@{$self->{commit_list}},\%hash);
 }
 
-sub assign_delsection
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_delsection {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='delsection';
   push(@{$self->{commit_list}},\%hash);
 }
 
-sub assign_addsection
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_addsection {
+  my $self = shift;
+  my %hash = @_;
   $hash{action} = 'addsection';
   push(@{$self->{commit_list}}, \%hash);
 }
 
-sub assign_editkey
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_editkey {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='editkey';
   push(@{$self->{commit_list}},\%hash);
 }
 
-sub assign_delkey
-{
-my  $self = shift;
-my  %hash = @_;
+sub assign_delkey {
+  my $self = shift;
+  my %hash = @_;
   $hash{'action'}='delkey';
   push(@{$self->{commit_list}},\%hash);
 }
@@ -342,23 +324,22 @@ my  %hash = @_;
 #  save method and save internal method
 #  filename: run assign rules and save to file
 #  save_file();
-sub save_file
-{
-my  $self = shift;
-my  %opts = @_;
+sub save_file {
+  my $self = shift;
+  my %opts = @_;
 
   return if ($#{$self->{commit_list}} < 0);
 
-my  $used_resource;
+  my $used_resource;
   #check to use resource_list?
   if (defined $self->{'keep_resource_array'} && $self->{'keep_resource_array'}) {
-#   $used_resource = $self->{resource_list};
+    # $used_resource = $self->{resource_list};
     $used_resource = [ @{ $self->{resource_list} } ];
   }
 
   if (!defined $used_resource) {
     open(DATA,"<$self->{'file'}") or die "Asterisk-config can't read from $self->{file} : $!";
-  my  @DATA = <DATA>;
+    my @DATA = <DATA>;
     close(DATA);
     chomp(@DATA);
     $used_resource = \@DATA;
@@ -393,18 +374,17 @@ my  $used_resource;
     &reload($self);
   }
 
-return();
+  return();
 }
 
-sub _do_editkey
-{
-my  $one_case = shift;
-my  $data = shift;
-my  $class_self = shift;
+sub _do_editkey {
+  my $one_case = shift;
+  my $data = shift;
+  my $class_self = shift;
 
-my  @NEW;
-my  $last_section_name='[unsection]';
-my  $auto_save=0;
+  my @NEW;
+  my $last_section_name='[unsection]';
+  my $auto_save=0;
 
   foreach my $one_line (@$data) {
 
@@ -431,13 +411,13 @@ my  $auto_save=0;
       } elsif ($key eq $one_case->{'key'} && !$one_case->{'value'}) {     #处理全部匹配的key的value值
         if ($one_case->{'action'} eq 'delkey') {  undef($one_line); }
         else {  $one_line = "$key=".$one_case->{'new_value'}; }
-#       $one_line = "$key=".$one_case->{'new_value'};
-#       undef($one_line) if ($one_case->{'action'} eq 'delkey');
+        # $one_line = "$key=".$one_case->{'new_value'};
+        # undef($one_line) if ($one_case->{'action'} eq 'delkey');
       } elsif ($key eq $one_case->{'key'} && $one_case->{'value'} eq $value) {  #处理唯一匹配的key的value值
         if ($one_case->{'action'} eq 'delkey') {  undef($one_line); }
         else {  $one_line = "$key=".$one_case->{'new_value'}; }
-#       $one_line = "$key=".$one_case->{'new_value'};
-#       undef($one_line) if ($one_case->{'action'} eq 'delkey');
+        # $one_line = "$key=".$one_case->{'new_value'};
+        # undef($one_line) if ($one_case->{'action'} eq 'delkey');
         $auto_save = 1;
       }
     }
@@ -445,18 +425,17 @@ my  $auto_save=0;
     push(@NEW,$one_line) if (defined $one_line);
   }
 
-return(\@NEW);
+  return(\@NEW);
 }
 
-sub _do_delsection
-{
-my  $one_case = shift;
-my  $data = shift;
-my  $class_self = shift;
+sub _do_delsection {
+  my $one_case = shift;
+  my $data = shift;
+  my $class_self = shift;
 
-my  @NEW;
-my  $last_section_name='[unsection]';
-my  $auto_save=0;
+  my @NEW;
+  my $last_section_name='[unsection]';
+  my $auto_save=0;
 
   push(@NEW,&_format_convert($one_case->{'data'}))
     if ($one_case->{'section'} eq '[unsection]' and $one_case->{'action'} eq 'replacesection');
@@ -492,23 +471,21 @@ my  $auto_save=0;
     push(@NEW,$one_line);
   }
 
-return(\@NEW);
+  return(\@NEW);
 }
 
-sub _do_addsection
-{
-my  $one_case = shift;
-my  $data = shift;
-my  $class_self = shift;
+sub _do_addsection {
+  my $one_case = shift;
+  my $data = shift;
+  my $class_self = shift;
 
-my  $exists = 0;
-my  $section = '[' . $one_case->{section} . ']';
+  my $exists = 0;
+  my $section = '[' . $one_case->{section} . ']';
 
   foreach my $one_line(@$data) {
 
     my $line_sp=&_clean_string($one_line,$class_self->{comment_flag});
     if($line_sp =~ /^\[.+\]/) {
-
       if ($section eq $line_sp) {
         $exists = 1;
         last;
@@ -516,19 +493,17 @@ my  $section = '[' . $one_case->{section} . ']';
     }
   }
   unless($exists) {
-
     push(@$data, $section);
   }
 
-return $data;
+  return $data;
 }
 
-sub _do_append
-{
-my  $one_case = shift;
-my  $data = shift;
-my  $class_self = shift;
-my  @NEW;
+sub _do_append {
+  my $one_case = shift;
+  my $data = shift;
+  my $class_self = shift;
+  my @NEW;
 
   if ((not exists $one_case->{'section'}) || ($one_case->{'section'} eq '')) {
   #Append data head of source data/foot of source data
@@ -540,15 +515,15 @@ my  @NEW;
 
   } elsif (!defined $one_case->{'comkey'} || $one_case->{'comkey'} eq '') {
   #Append data head/foot of section_name
-  my  $auto_save=0;
-  my  $save_tmpmem=0;
-  my  $offset=0;
+    my $auto_save=0;
+    my $save_tmpmem=0;
+    my $offset=0;
     foreach my $one_line (@$data) {
       #tune on auto save
       if ($auto_save) {     push(@NEW,$one_line);     $offset++;  next;   }
       #check section
-    my  $line_sp=&_clean_string($one_line,$class_self->{comment_flag});
-    my  ($section_name) = $line_sp =~ /^\[(.+)\]/;
+      my $line_sp=&_clean_string($one_line,$class_self->{comment_flag});
+      my ($section_name) = $line_sp =~ /^\[(.+)\]/;
 
       # for up / down
       if (defined $section_name && $one_case->{'section'} eq $section_name && $one_case->{'point'} eq 'up') {
@@ -602,13 +577,12 @@ my  @NEW;
 
   }
 
-return(\@NEW);
+  return(\@NEW);
 }
 
 # income scalar,array ref,hash ref output array data
-sub _format_convert
-{
-my  $string = shift;
+sub _format_convert {
+  my $string = shift;
   if (ref($string) eq 'ARRAY') {
     return(@$string);
   } elsif (ref($string) eq 'HASH') {
@@ -622,12 +596,11 @@ my  $string = shift;
   }
 }
 
-sub _do_matchreplace
-{
-my  $one_case = shift;
-my  $data = shift;
-my  $class_self = shift;
-my  @NEW;
+sub _do_matchreplace {
+  my $one_case = shift;
+  my $data = shift;
+  my $class_self = shift;
+  my @NEW;
 
   foreach my $one_line (@$data) {
     if ($one_line =~ /$one_case->{'match'}/) {
@@ -636,7 +609,7 @@ my  @NEW;
     push(@NEW,$one_line);
   }
 
-return(\@NEW);
+  return(\@NEW);
 }
 
 =head1 NAME
