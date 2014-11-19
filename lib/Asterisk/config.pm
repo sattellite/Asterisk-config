@@ -479,6 +479,12 @@ my	$auto_save=0;
 				$last_section_name = $1;
 				next if ($one_case->{'action'} eq 'delsection');
 				push(@NEW,$one_line);
+				my @get_conv=&_format_convert($one_case->{'data'});
+				if (ref(\@get_conv) eq 'ARRAY') {
+					$one_line = join "\n", @get_conv;
+				} else {
+					$one_line = $get_conv[0];
+				}
 				$one_line=&_format_convert($one_case->{'data'});
 			}
 		}
