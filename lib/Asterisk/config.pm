@@ -464,7 +464,6 @@ sub _do_delsection {
         } else {
           $one_line = $get_conv[0];
         }
-        $one_line=&_format_convert($one_case->{'data'});
       }
     }
 
