@@ -15,7 +15,7 @@ package Asterisk::config;
 #
 #
 #--------------------------------------------------------------
-$Asterisk::config::VERSION='0.97';
+$Asterisk::config::VERSION='0.98';
 
 use strict;
 use Fcntl ':flock';
@@ -596,18 +596,34 @@ sub _format_convert {
 }
 
 sub _do_matchreplace {
-  my $one_case = shift;
-  my $data = shift;
+  my $one_case   = shift;
+  my $data       = shift;
   my $class_self = shift;
   my @NEW;
 
-  foreach my $one_line (@$data) {
-    if ($one_line =~ /$one_case->{'match'}/) {
-      $one_line = $one_case->{'replace'};
-    }
-    push(@NEW,$one_line);
-  }
+  my $last_section_name='[unsection]';
 
+  foreach my $one_line (@$data) {
+    if ((not exists $one_case->{'section'}) || ($one_case->{'section'} eq '')) {
+      if ($one_line =~ /^$one_case->{'match'}/) {
+        $one_line = $one_case->{'replace'};
+      }
+      push(@NEW,$one_line);
+    }
+    else {
+      my $line_sp=&_clean_string($one_line,$class_self->{comment_flag});
+      if ($line_sp =~ /^\[(.+)\]/) {
+        #is this new section?
+        $last_section_name = $1;
+      }
+      if ($one_case->{'section'} eq $last_section_name) {
+        if ($one_line =~ /^$one_case->{'match'}/) {
+          $one_line = $one_case->{'replace'};
+        }
+      }
+      push(@NEW,$one_line);
+    }
+  }
   return(\@NEW);
 }
 
@@ -759,9 +775,11 @@ Resets all the non-saved changes (from other assign_* functions).
 
 =head2 assign_matchreplace
 
-    $sip_conf->assign_matchreplace(match=>[string],replace=>[string]);
+    $sip_conf->assign_matchreplace(section => [section name],
+                                   match   => [string],
+                                   replace => [string]);
 
-replace new data when matched.
+replace new data when matched. Will be replace matched lines only in one section if section is defined.
 
 =over 2
 
