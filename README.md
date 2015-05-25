@@ -151,10 +151,12 @@ Resets all the non-saved changes (from other assign\_\* functions).
 ## assign\_matchreplace
 
 ```perl
-$sip_conf->assign_matchreplace(match=>[string],replace=>[string]);
+$sip_conf->assign_matchreplace(section => [section name],
+                               match   => [string],
+                               replace => [string]);
 ```
 
-replace new data when matched.
+replace new data when matched. Will be replace matched lines only in one section if section is defined.
 
 - match -> string of matched data.
 - replace -> new data string.
