@@ -403,7 +403,7 @@ sub _do_editkey {
 
       if ($key eq $one_case->{'key'} && $one_case->{'value_regexp'} && !$one_case->{'value'}) {
         $value =~ /(.+?)\,/;
-        if ($one_case->{'action'} eq 'delkey') {
+        if ($one_case->{'action'} eq 'delkey' and $1 =~ /$one_case->{'value_regexp'}/) {
           undef($one_line);
         } elsif ($1 =~ /$one_case->{'value_regexp'}/) {
           $one_line = "$key=".$one_case->{'new_value'}
